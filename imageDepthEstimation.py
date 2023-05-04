@@ -6,8 +6,8 @@ from hitnet import HitNet, ModelType, draw_disparity, draw_depth, CameraConfig, 
 
 # Select model type
 # model_type = ModelType.middlebury
-# model_type = ModelType.flyingthings
-model_type = ModelType.eth3d
+model_type = ModelType.flyingthings
+# model_type = ModelType.eth3d
 
 if model_type == ModelType.middlebury:
 	model_path = "models/middlebury_d400.pb"
@@ -21,8 +21,13 @@ elif model_type == ModelType.eth3d:
 hitnet_depth = HitNet(model_path, model_type)
 
 # Load images
-left_img = load_img("https://vision.middlebury.edu/stereo/data/scenes2003/newdata/cones/im2.png")
-right_img = load_img("https://vision.middlebury.edu/stereo/data/scenes2003/newdata/cones/im6.png")
+#left_img = load_img("https://vision.middlebury.edu/stereo/data/scenes2003/newdata/cones/im2.png")
+#right_img = load_img("https://vision.middlebury.edu/stereo/data/scenes2003/newdata/cones/im6.png")
+
+# Load custom images
+
+left_img = cv2.imread("000000_10.png")
+right_img = cv2.imread("000000_11.png")
 
 # Estimate the depth
 disparity_map = hitnet_depth(left_img, right_img)
