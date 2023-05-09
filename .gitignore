@@ -127,3 +127,7 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+.idea/inspectionProfiles/profiles_settings.xml
+.idea/modules.xml
+.idea/thesis-HITNET-Stereo-Depth-estimation.iml
+.idea/vcs.xml

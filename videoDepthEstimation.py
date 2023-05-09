@@ -2,6 +2,7 @@ import cv2
 import pafy
 import tensorflow as tf
 import numpy as np
+import yt_dlp as youtube_dl
 
 from hitnet import HitNet, ModelType, draw_disparity, draw_depth, CameraConfig
 
@@ -27,7 +28,7 @@ elif model_type == ModelType.eth3d:
 	model_path = "models/eth3d.pb"
 
 # Store baseline (m) and focal length (pixel)
-camera_config = CameraConfig(0.1, 320)
+camera_config = CameraConfig(0.05, 320)
 max_distance = 5
 
 # Initialize model
