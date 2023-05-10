@@ -5,6 +5,10 @@ import cv2
 import urllib
 from dataclasses import dataclass
 
+class ExportType(Enum):
+	images = 501
+	video = 502
+
 class ModelType(Enum):
 	eth3d = 0
 	middlebury = 1

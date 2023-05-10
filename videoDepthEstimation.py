@@ -2,23 +2,24 @@ import cv2
 import pafy
 import tensorflow as tf
 import numpy as np
-import yt_dlp as youtube_dl
 
-from hitnet import HitNet, ModelType, draw_disparity, draw_depth, CameraConfig
+from hitnet import HitNet, ExportType, ModelType, draw_disparity, draw_depth, CameraConfig
 
 # Initialize video
 # cap = cv2.VideoCapture("video.mp4")
 
-videoUrl = 'https://youtu.be/Yui48w71SG0'
-videoPafy = pafy.new(videoUrl)
-print(videoPafy.streams)
-cap = cv2.VideoCapture(videoPafy.getbestvideo().url)
+#videoUrl = 'https://youtu.be/Yui48w71SG0'
+#videoPafy = pafy.new(videoUrl)
+#print(videoPafy.streams)
+#cap = cv2.VideoCapture(videoPafy.getbestvideo().url)
 
+cap = cv2.VideoCapture("first_video.mkv")
+cap.set(cv2.CAP_PROP_POS_FRAMES, 250)
 
 # Select model type
-# model_type = ModelType.middlebury
+model_type = ModelType.middlebury
 # model_type = ModelType.flyingthings
-model_type = ModelType.eth3d
+# model_type = ModelType.eth3d
 
 if model_type == ModelType.middlebury:
 	model_path = "models/middlebury_d400.pb"
@@ -28,15 +29,26 @@ elif model_type == ModelType.eth3d:
 	model_path = "models/eth3d.pb"
 
 # Store baseline (m) and focal length (pixel)
-camera_config = CameraConfig(0.05, 320)
-max_distance = 5
+camera_config = CameraConfig(0.15, 1024)
+max_distance = 10
+
+# Select export type
+# export_type = ExportType.images
+export_type = ExportType.video
+
+# video initializer
+videoname = "third_test.mp4"
+fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+fps = 12
+frame_size = (1280*2, (720-23)*2)
+out = cv2.VideoWriter(videoname, fourcc, fps, frame_size)
 
 # Initialize model
 hitnet_depth = HitNet(model_path, model_type, camera_config)
-
-cv2.namedWindow("Estimated depth", cv2.WINDOW_NORMAL)	
+i = 0
+cv2.namedWindow("Estimated depth", cv2.WINDOW_NORMAL)
 while cap.isOpened():
-
+	i = i + 1
 	try:
 		# Read frame from the video
 		ret, frame = cap.read()
@@ -46,9 +58,9 @@ while cap.isOpened():
 		continue
 
 	# Extract the left and right images
-	left_img  = frame[:,:frame.shape[1]//3]
-	right_img = frame[:,frame.shape[1]//3:frame.shape[1]*2//3]
-	color_real_depth = frame[:,frame.shape[1]*2//3:]
+	left_img  = frame[:-23,:frame.shape[1]//2]
+	right_img = frame[23:,frame.shape[1]//2:]
+	#color_real_depth = frame[:,frame.shape[1]*2//3:]
 
 	# Estimate the depth
 	disparity_map = hitnet_depth(left_img, right_img)
@@ -56,13 +68,21 @@ while cap.isOpened():
 
 	color_disparity = draw_disparity(disparity_map)
 	color_depth = draw_depth(depth_map, max_distance)
-	cobined_image = np.hstack((left_img,color_real_depth, color_depth))
+	cobined_image = np.vstack((np.hstack((left_img,right_img)),
+							  np.hstack((color_disparity,color_depth))))
 
 	cv2.imshow("Estimated depth", cobined_image)
+
+	if (export_type == export_type.video):
+		out.write(cobined_image)
+	else:
+		filename = "0.15_1024_10_flyingthings_"+str(i).zfill(8)+".jpeg"
+		cv2.imwrite(filename,cobined_image)
 
 	# Press key q to stop
 	if cv2.waitKey(1) == ord('q'):
 		break
 
+out.release()
 cap.release()
 cv2.destroyAllWindows()
