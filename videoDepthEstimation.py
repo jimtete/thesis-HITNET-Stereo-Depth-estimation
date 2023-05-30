@@ -13,12 +13,12 @@ from hitnet import HitNet, ExportType, ModelType, draw_disparity, draw_depth, Ca
 #print(videoPafy.streams)
 #cap = cv2.VideoCapture(videoPafy.getbestvideo().url)
 
-cap = cv2.VideoCapture("first_video.mkv")
-cap.set(cv2.CAP_PROP_POS_FRAMES, 250)
+cap = cv2.VideoCapture("second_video.mkv")
+#cap.set(cv2.CAP_PROP_POS_FRAMES, 250)
 
 # Select model type
-model_type = ModelType.middlebury
-# model_type = ModelType.flyingthings
+# model_type = ModelType.middlebury
+model_type = ModelType.flyingthings
 # model_type = ModelType.eth3d
 
 if model_type == ModelType.middlebury:
@@ -37,9 +37,9 @@ max_distance = 10
 export_type = ExportType.video
 
 # video initializer
-videoname = "third_test.mp4"
+videoname = "first_test_2.mp4"
 fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-fps = 12
+fps = 24
 frame_size = (1280*2, (720-23)*2)
 out = cv2.VideoWriter(videoname, fourcc, fps, frame_size)
 
