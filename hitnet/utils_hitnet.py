@@ -8,6 +8,7 @@ from dataclasses import dataclass
 class KittiSet(Enum):
 	kitti_2012 = 2012
 	kitti_2015 = 2015
+	atieth_2306 = 2306
 
 class ExportType(Enum):
 	images = 501

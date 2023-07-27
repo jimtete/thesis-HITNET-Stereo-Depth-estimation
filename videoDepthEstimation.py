@@ -1,3 +1,4 @@
+import time
 import cv2
 import pafy
 import tensorflow as tf
@@ -13,7 +14,7 @@ from hitnet import HitNet, ExportType, ModelType, draw_disparity, draw_depth, Ca
 #print(videoPafy.streams)
 #cap = cv2.VideoCapture(videoPafy.getbestvideo().url)
 
-cap = cv2.VideoCapture("second_video.mkv")
+cap = cv2.VideoCapture("first_video.mkv")
 #cap.set(cv2.CAP_PROP_POS_FRAMES, 250)
 
 # Select model type
@@ -30,17 +31,17 @@ elif model_type == ModelType.eth3d:
 
 # Store baseline (m) and focal length (pixel)
 camera_config = CameraConfig(0.15, 1024)
-max_distance = 10
+max_distance = 100
 
 # Select export type
 # export_type = ExportType.images
 export_type = ExportType.video
 
 # video initializer
-videoname = "first_test_2.mp4"
+videoname = str(time.time())+"_video.mp4"
 fourcc = cv2.VideoWriter_fourcc(*'mp4v')
 fps = 24
-frame_size = (1280*2, (720-23)*2)
+frame_size = (1200*2, (720-223)*2)
 out = cv2.VideoWriter(videoname, fourcc, fps, frame_size)
 
 # Initialize model
@@ -57,31 +58,33 @@ while cap.isOpened():
 	except:
 		continue
 
-	# Extract the left and right images
-	left_img  = frame[:-23,:frame.shape[1]//2]
-	right_img = frame[23:,frame.shape[1]//2:]
-	#color_real_depth = frame[:,frame.shape[1]*2//3:]
+	if (i % 12 == 0):
 
-	# Estimate the depth
-	disparity_map = hitnet_depth(left_img, right_img)
-	depth_map = hitnet_depth.get_depth()
+		# Extract the left and right images
+		left_img  = frame[200:-23,:frame.shape[1]//2-80]
+		right_img = frame[223:,80+frame.shape[1]//2:]
+		#color_real_depth = frame[:,frame.shape[1]*2//3:]
 
-	color_disparity = draw_disparity(disparity_map)
-	color_depth = draw_depth(depth_map, max_distance)
-	cobined_image = np.vstack((np.hstack((left_img,right_img)),
-							  np.hstack((color_disparity,color_depth))))
+		# Estimate the depth
+		disparity_map = hitnet_depth(left_img, right_img)
+		depth_map = hitnet_depth.get_depth()
 
-	cv2.imshow("Estimated depth", cobined_image)
+		color_disparity = draw_disparity(disparity_map)
+		color_depth = draw_depth(depth_map, max_distance)
+		cobined_image = np.vstack((np.hstack((left_img,right_img)),
+								  np.hstack((color_disparity,color_depth))))
 
-	if (export_type == export_type.video):
-		out.write(cobined_image)
-	else:
-		filename = "0.15_1024_10_flyingthings_"+str(i).zfill(8)+".jpeg"
-		cv2.imwrite(filename,cobined_image)
+		cv2.imshow("Estimated depth", cobined_image)
 
-	# Press key q to stop
-	if cv2.waitKey(1) == ord('q'):
-		break
+		if (export_type == export_type.video):
+			out.write(cobined_image)
+		else:
+			filename = "0.15_1024_10_flyingthings_"+str(i).zfill(8)+".jpeg"
+			cv2.imwrite(filename,cobined_image)
+
+		# Press key q to stop
+		if cv2.waitKey(1) == ord('q'):
+			break
 
 out.release()
 cap.release()

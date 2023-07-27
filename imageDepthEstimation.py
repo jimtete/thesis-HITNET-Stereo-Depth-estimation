@@ -26,8 +26,13 @@ hitnet_depth = HitNet(model_path, model_type)
 
 # Load custom images
 
-left_img = cv2.imread("000000_10.png")
-right_img = cv2.imread("000000_11.png")
+# path = "./"
+path = "./ateith_dataset/ATEITH_2304_SLOW/"
+
+left_img = cv2.imread(path+"image_left_00450.png")
+left_img = left_img[200:-23, :-80]
+right_img = cv2.imread(path+"image_right_00450.png")
+right_img = right_img[223:,80:]
 
 # Estimate the depth
 disparity_map = hitnet_depth(left_img, right_img)
