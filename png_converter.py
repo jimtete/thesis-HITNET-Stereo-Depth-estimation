@@ -13,8 +13,8 @@ def save_frames(video_file, output_name):
 
         if frame_count % 25 == 0:
             height, width, _ = frame.shape
-            left_frame = frame #[:, :width//2, :]
-            right_frame = frame #[:, width//2:, :]
+            left_frame = frame[:, :width//2, :]
+            right_frame = frame[:, width//2:, :]
 
             left_filename = f"{output_name}_left_{saved_frame_count:05d}.png"
             right_filename = f"{output_name}_right_{saved_frame_count:05d}.png"
